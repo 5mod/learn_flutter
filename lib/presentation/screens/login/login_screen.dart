@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:learn_flutter/config/themes.dart';
 import 'package:learn_flutter/core/constants/app_strings.dart';
 import 'package:learn_flutter/core/widgets/custom_card.dart';
+import 'package:learn_flutter/core/controllers/theme_controller.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,6 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
+  final ThemeController themeController = Get.find();
 
   void _handleLogin() {
     _nameController.clear();
@@ -27,10 +30,10 @@ class _LoginScreenState extends State<LoginScreen> {
           style: const TextStyle(fontSize: 16),
         ),
         backgroundColor: AppColors.darkBlue,
-        duration: const Duration(seconds: 3), 
-        behavior: SnackBarBehavior.floating, 
-        margin: const EdgeInsets.all(20), 
-        shape: RoundedRectangleBorder( 
+        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(20),
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
       ),
@@ -40,7 +43,19 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.paleBlue,
+      appBar: AppBar(
+        title: const Text('Login'),
+        actions: [
+          IconButton(
+            icon: Icon(themeController.isDarkMode.value
+                ? Icons.light_mode
+                : Icons.dark_mode),
+            onPressed: () {
+              themeController.toggleTheme();
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -75,9 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-              
               const SizedBox(height: 32),
-              
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: CustomLoginCard(
@@ -87,12 +100,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   onLoginPressed: _handleLogin,
                 ),
               ),
-              
               const SizedBox(height: 24),
-              
               TextButton(
-                onPressed: () {
-                },
+                onPressed: () {},
                 child: Text(
                   AppStrings.createAccount,
                   style: TextStyle(
@@ -116,4 +126,4 @@ class _LoginScreenState extends State<LoginScreen> {
     _nameController.dispose();
     super.dispose();
   }
-} 
+}

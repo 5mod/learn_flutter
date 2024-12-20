@@ -20,7 +20,7 @@ class CustomLoginCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -39,7 +39,7 @@ class CustomLoginCard extends StatelessWidget {
             Text(
               AppStrings.login,
               style: TextStyle(
-                color: AppColors.darkBlue,
+                color: Theme.of(context).primaryColor,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
