@@ -1,60 +1,73 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:learn_flutter/config/themes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeController extends GetxController {
-  // Initial theme mode
-  var isDarkMode = false.obs;
+  static const String THEME_KEY = 'is_dark_mode';
 
-  // Toggle theme
-  void toggleTheme() {
-    isDarkMode.value = !isDarkMode.value;
+  var isDarkMode = false.obs;
+  late SharedPreferences _prefs;
+
+  @override
+  void onInit() async {
+    super.onInit();
+    await _initPrefs();
   }
 
-  // Get current theme
+  Future<void> _initPrefs() async {
+    _prefs = Get.find<SharedPreferences>();
+    isDarkMode.value = _prefs.getBool(THEME_KEY) ?? false;
+  }
+
+  void toggleTheme() {
+    isDarkMode.value = !isDarkMode.value;
+    _saveThemeStatus();
+  }
+
+  Future<void> _saveThemeStatus() async {
+    await _prefs.setBool(THEME_KEY, isDarkMode.value);
+  }
+
   ThemeData get currentTheme {
     return isDarkMode.value ? _darkTheme : _lightTheme;
   }
 
-  // Define light theme
   ThemeData get _lightTheme {
     return ThemeData(
       primaryColor: AppColors.darkBlue,
       scaffoldBackgroundColor: AppColors.paleBlue,
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.darkBlue,
         titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
       ),
-      colorScheme: ColorScheme.light(
+      colorScheme: const ColorScheme.light(
         primary: AppColors.darkBlue,
         secondary: AppColors.greyBlue,
       ),
-      textTheme: TextTheme(
+      textTheme: const TextTheme(
         bodyLarge: TextStyle(color: AppColors.darkBlue),
         bodyMedium: TextStyle(color: AppColors.greyBlue),
       ),
-      // Add more theme properties as needed
     );
   }
 
-  // Define dark theme
   ThemeData get _darkTheme {
     return ThemeData(
       primaryColor: AppColors.lightBlue,
       scaffoldBackgroundColor: AppColors.darkBlue,
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.lightBlue,
         titleTextStyle: TextStyle(color: Colors.black, fontSize: 20),
       ),
-      colorScheme: ColorScheme.dark(
+      colorScheme: const ColorScheme.dark(
         primary: AppColors.lightBlue,
         secondary: AppColors.greyBlue,
       ),
-      textTheme: TextTheme(
+      textTheme: const TextTheme(
         bodyLarge: TextStyle(color: Colors.white),
         bodyMedium: TextStyle(color: AppColors.greyBlue),
       ),
-      // Add more theme properties as needed
     );
   }
 }

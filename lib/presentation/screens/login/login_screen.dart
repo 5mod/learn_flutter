@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:learn_flutter/config/themes.dart';
 import 'package:learn_flutter/core/constants/app_strings.dart';
 import 'package:learn_flutter/core/widgets/custom_card.dart';
+import 'package:learn_flutter/presentation/controllers/auth_controller.dart';
 import 'package:learn_flutter/core/controllers/theme_controller.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,105 +16,142 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
   final ThemeController themeController = Get.find();
+  final AuthController authController = Get.find();
 
-  void _handleLogin() {
-    _nameController.clear();
-    _emailController.clear();
-    _passwordController.clear();
+  void _handleLogin() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill all fields'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          AppStrings.comingSoon,
-          style: const TextStyle(fontSize: 16),
-        ),
-        backgroundColor: AppColors.darkBlue,
-        duration: const Duration(seconds: 3),
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(20),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
+    await authController.login(
+      email: _emailController.text,
+      password: _passwordController.text,
     );
+
+    if (authController.error != null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authController.error!),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Login'),
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text(
+          'Login',
+          style: TextStyle(
+            color:
+                themeController.isDarkMode.value ? Colors.black : Colors.white,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: Icon(themeController.isDarkMode.value
-                ? Icons.light_mode
-                : Icons.dark_mode),
+            icon: Icon(
+              themeController.isDarkMode.value
+                  ? Icons.light_mode
+                  : Icons.dark_mode,
+              color: themeController.isDarkMode.value
+                  ? Colors.black
+                  : Colors.white,
+            ),
             onPressed: () {
               themeController.toggleTheme();
             },
           ),
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: 200,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: AppColors.darkBlue,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(30),
-                    bottomRight: Radius.circular(30),
-                  ),
-                ),
+      body: Obx(
+        () => Stack(
+          children: [
+            SafeArea(
+              child: SingleChildScrollView(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.person_outline,
-                      size: 80,
-                      color: AppColors.paleBlue,
+                    Container(
+                      height: 200,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(30),
+                          bottomRight: Radius.circular(30),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.person_outline,
+                            size: 80,
+                            color: themeController.isDarkMode.value
+                                ? Colors.black
+                                : Colors.white,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            AppStrings.welcome,
+                            style: TextStyle(
+                              color: themeController.isDarkMode.value
+                                  ? Colors.black
+                                  : Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      AppStrings.welcome,
-                      style: TextStyle(
-                        color: AppColors.paleBlue,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
+                    const SizedBox(height: 32),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: CustomLoginCard(
+                        emailController: _emailController,
+                        passwordController: _passwordController,
+                        onLoginPressed: _handleLogin,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    TextButton(
+                      onPressed: () {
+                        // Navigate to register screen
+                        Get.toNamed('/register');
+                      },
+                      child: Text(
+                        AppStrings.createAccount,
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: CustomLoginCard(
-                  emailController: _emailController,
-                  passwordController: _passwordController,
-                  nameController: _nameController,
-                  onLoginPressed: _handleLogin,
+            ),
+            if (authController.isLoading)
+              Container(
+                color: Colors.black.withOpacity(0.5),
+                child: const Center(
+                  child: CircularProgressIndicator(),
                 ),
               ),
-              const SizedBox(height: 24),
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  AppStrings.createAccount,
-                  style: TextStyle(
-                    color: AppColors.darkBlue,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -123,7 +161,6 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _nameController.dispose();
     super.dispose();
   }
 }

@@ -5,26 +5,26 @@ import 'package:learn_flutter/core/constants/app_strings.dart';
 class CustomLoginCard extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
-  final TextEditingController nameController;
   final VoidCallback onLoginPressed;
 
   const CustomLoginCard({
     super.key,
     required this.emailController,
     required this.passwordController,
-    required this.nameController,
     required this.onLoginPressed,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
+        color: isDark ? AppColors.greyBlue.withOpacity(0.1) : Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.darkBlue.withOpacity(0.1),
+            color: Theme.of(context).shadowColor.withOpacity(0.1),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -45,15 +45,7 @@ class CustomLoginCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            
-            // Name TextField
-            CustomTextField(
-              controller: nameController,
-              hintText: AppStrings.name,
-              icon: Icons.person,
-            ),
-            const SizedBox(height: 16),
-            
+
             // Email TextField
             CustomTextField(
               controller: emailController,
@@ -61,7 +53,7 @@ class CustomLoginCard extends StatelessWidget {
               icon: Icons.email,
             ),
             const SizedBox(height: 16),
-            
+
             // Password TextField
             CustomTextField(
               controller: passwordController,
@@ -70,7 +62,7 @@ class CustomLoginCard extends StatelessWidget {
               isPassword: true,
             ),
             const SizedBox(height: 24),
-            
+
             // Login Button
             SizedBox(
               width: double.infinity,
@@ -103,13 +95,15 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.greyBlue : Colors.white,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Theme.of(context).shadowColor.withOpacity(0.1),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -118,44 +112,46 @@ class CustomTextField extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         obscureText: isPassword,
-        style: const TextStyle(fontSize: 16),
+        style: TextStyle(
+          fontSize: 16,
+          color: isDark ? Colors.white : Colors.black,
+        ),
         decoration: InputDecoration(
           labelText: hintText,
           floatingLabelStyle: TextStyle(
-            color: AppColors.darkBlue,
+            color: Theme.of(context).primaryColor,
             fontSize: 16,
             fontWeight: FontWeight.w500,
           ),
           labelStyle: TextStyle(
-            color: Colors.grey[400],
+            color: isDark ? Colors.white70 : Colors.grey[600],
             fontSize: 14,
           ),
           prefixIcon: Icon(
             icon,
-            color: AppColors.darkBlue,
+            color: Theme.of(context).primaryColor,
             size: 22,
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
             borderSide: BorderSide(
-              color: AppColors.darkBlue,
+              color: Theme.of(context).primaryColor,
               width: 1.5,
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
             borderSide: BorderSide(
-              color: Colors.grey[200]!,
+              color: isDark ? Colors.white24 : Colors.grey[200]!,
               width: 1.0,
             ),
           ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: isDark ? AppColors.greyBlue : Colors.white,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 16,
           ),
-          focusColor: AppColors.paleBlue.withOpacity(0.1),
         ),
       ),
     );
@@ -175,11 +171,13 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.darkBlue,
-        foregroundColor: Colors.white,
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: isDark ? Colors.black : Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -187,11 +185,12 @@ class CustomButton extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
+          color: isDark ? Colors.black : Colors.white,
         ),
       ),
     );
   }
-} 
+}
