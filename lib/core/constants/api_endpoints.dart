@@ -11,4 +11,7 @@ class ApiEndpoints {
   // User Endpoints
   static const String profile = '/accounts/profile';
   static const String avatar = '/accounts/avatar';
+
+  static const String genre = '/genres';
+  
 }
